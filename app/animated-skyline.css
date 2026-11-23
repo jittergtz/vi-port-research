@@ -1,0 +1,41 @@
+.animated-skyline {
+  --skyline-fade-duration: 3s;
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--skyline-height);
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.animated-skyline[data-monochrome] {
+  filter: grayscale(1);
+}
+
+.animated-skyline-wash {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animated-skyline-wash {
+    --skyline-gradient-angle: 349deg;
+    display: block;
+    position: absolute;
+    inset: 0;
+    animation: skyline-crossfade var(--skyline-fade-duration) ease-in-out infinite alternate;
+  }
+
+  @supports (mix-blend-mode: plus-lighter) {
+    .animated-skyline-wash {
+      mix-blend-mode: plus-lighter;
+    }
+
+    .animated-skyline > .skyline {
+      animation: skyline-crossfade var(--skyline-fade-duration) ease-in-out infinite alternate-reverse;
+    }
+  }
+}
+
+@keyframes skyline-crossfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
