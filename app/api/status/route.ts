@@ -39,6 +39,7 @@ async function github(path: string, accept = "application/vnd.github+json") {
   const response = await fetch(api + path, {
     headers: {
       Accept: accept,
+      "User-Agent": "vi-port-research",
       "X-GitHub-Api-Version": "2026-03-10",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
