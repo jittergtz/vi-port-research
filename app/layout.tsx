@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: "VI Port Journal", template: "%s | VI Port Journal" },
-  description: "An independent developer journal tracking Leonida’s effort to run GTA VI’s Xbox Series build on PC.",
+  description: "An independent developer journal comparing community efforts to run GTA VI’s Xbox Series build on PC.",
 };
 
 const themeScript = `try {
@@ -33,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <footer className="site-footer">
           <div className="shell flex flex-wrap items-center justify-between gap-3">
             <Link className="footer-brand" href="/">VI Port Journal</Link>
-            <p>Independent research journal · Unofficial coverage of Leonida</p>
+            <p>Independent research journal · Unofficial GTA VI PC coverage</p>
           </div>
         </footer>
       </body>

@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { projects } from "../../project-data";
 import {
   githubPollInterval,
   type Discussion,
@@ -6,8 +7,6 @@ import {
   type StatusResponse,
 } from "../../status-data";
 
-const repo = "ItsNotRexed/Leonida";
-const repoApi = `/repos/${repo}`;
 const api = "https://api.github.com";
 
 type SearchResult = {
@@ -29,16 +28,21 @@ type GitHubRelease = {
   published_at: string;
 };
 
-let lastSnapshot: RepositoryStatus | null = null;
-let refreshInFlight: Promise<void> | null = null;
-let nextRefreshAt = 0;
-let refreshFailed = false;
+type RepositoryCache = {
+  snapshot: RepositoryStatus | null;
+  refresh: Promise<void> | null;
+  nextRefreshAt: number;
+  stale: boolean;
+};
 
-async function github(path: string, accept = "application/vnd.github+json") {
+const repositoryCaches = new Map<string, RepositoryCache>();
+let githubRetryAt = 0;
+
+async function github(path: string) {
   const token = process.env.GITHUB_TOKEN;
   const response = await fetch(api + path, {
     headers: {
-      Accept: accept,
+      Accept: "application/vnd.github+json",
       "User-Agent": "vi-port-research",
       "X-GitHub-Api-Version": "2026-03-10",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -52,13 +56,15 @@ async function github(path: string, accept = "application/vnd.github+json") {
     const reset = response.headers.get("x-ratelimit-remaining") === "0"
       ? Number(response.headers.get("x-ratelimit-reset")) * 1000
       : 0;
-    nextRefreshAt = Math.max(nextRefreshAt, Date.now() + retryAfter * 1000, reset);
+    if (retryAfter > 0 || reset > 0) {
+      githubRetryAt = Math.max(githubRetryAt, Date.now() + retryAfter * 1000, reset);
+    }
     throw new Error(`GitHub API returned ${response.status}`);
   }
   return response;
 }
 
-async function openItems(kind: "issue" | "pr") {
+async function openItems(repo: string, kind: "issue" | "pr") {
   const query = new URLSearchParams({
     q: `repo:${repo} is:${kind} is:open`,
     sort: "updated",
@@ -76,32 +82,23 @@ async function openItems(kind: "issue" | "pr") {
   return { count: result.total_count, items };
 }
 
-function readPlayability(readme: string) {
-  const section = readme.split(/^## +/m).find((part) => /^Project status[ \t]*\r?\n/i.test(part));
-  const row = section?.split(/\r?\n/).find((line) => /^\s*\|\s*Booting, story mode/i.test(line));
-  const value = row?.split("|")[2]?.replace(/[\p{Extended_Pictographic}\uFE0F*]/gu, "").trim();
-  if (value && /^no\b/i.test(value)) return "Not playable";
-  if (value && /^yes\b/i.test(value)) return "Playable";
-  return null;
-}
+async function refreshStatus(repo: string, cache: RepositoryCache) {
+  const repoApi = `/repos/${repo}`;
 
-async function refreshStatus() {
   try {
-    const [issues, pulls, commits, releases, readme] = await Promise.allSettled([
-      openItems("issue"),
-      openItems("pr"),
-      github(`${repoApi}/commits?sha=main&per_page=5`).then((res) => res.json() as Promise<GitHubCommit[]>),
+    const [issues, pulls, commits, releases] = await Promise.allSettled([
+      openItems(repo, "issue"),
+      openItems(repo, "pr"),
+      github(`${repoApi}/commits?per_page=5`).then((res) => res.json() as Promise<GitHubCommit[]>),
       github(`${repoApi}/releases?per_page=1`).then((res) => res.json() as Promise<GitHubRelease[]>),
-      github(`${repoApi}/readme`, "application/vnd.github.raw+json").then((res) => res.text()),
     ]);
-    if (issues.status !== "fulfilled" || pulls.status !== "fulfilled" || commits.status !== "fulfilled" || releases.status !== "fulfilled" || readme.status !== "fulfilled") {
+    if (issues.status !== "fulfilled" || pulls.status !== "fulfilled" || commits.status !== "fulfilled" || releases.status !== "fulfilled") {
       throw new Error("GitHub snapshot could not be completed");
     }
 
     const release = releases.value[0];
-    lastSnapshot = {
+    cache.snapshot = {
       checkedAt: new Date().toISOString(),
-      playability: readPlayability(readme.value),
       openIssues: issues.value.count,
       openPullRequests: pulls.value.count,
       issues: issues.value.items,
@@ -118,25 +115,40 @@ async function refreshStatus() {
         date: release.published_at,
       } : null,
     };
-    refreshFailed = false;
-    nextRefreshAt = Date.now() + githubPollInterval;
+    cache.stale = false;
+    cache.nextRefreshAt = Date.now() + githubPollInterval;
   } catch {
-    refreshFailed = true;
-    nextRefreshAt = Math.max(nextRefreshAt, Date.now() + 120_000);
+    cache.stale = true;
+    cache.nextRefreshAt = Date.now() + 120_000;
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   await connection();
 
-  if (!refreshInFlight && Date.now() >= nextRefreshAt) {
-    refreshInFlight = refreshStatus().finally(() => { refreshInFlight = null; });
+  const projectId = new URL(request.url).searchParams.get("project") ?? projects[0].id;
+  const project = projects.find(({ id }) => id === projectId);
+  if (!project) {
+    return Response.json({ error: "Unknown project" }, { status: 400 });
   }
-  await refreshInFlight;
 
-  const body: StatusResponse = { data: lastSnapshot, stale: refreshFailed };
+  let cache = repositoryCaches.get(project.repo);
+  if (!cache) {
+    cache = { snapshot: null, refresh: null, nextRefreshAt: 0, stale: false };
+    repositoryCaches.set(project.repo, cache);
+  }
+
+  if (!cache.refresh && Date.now() >= Math.max(cache.nextRefreshAt, githubRetryAt)) {
+    cache.refresh = refreshStatus(project.repo, cache).finally(() => { cache.refresh = null; });
+  }
+  await cache.refresh;
+
+  const body: StatusResponse = {
+    data: cache.snapshot,
+    stale: cache.stale || Date.now() >= cache.nextRefreshAt,
+  };
   return Response.json(body, {
-    status: lastSnapshot ? 200 : 503,
+    status: body.data ? 200 : 503,
     headers: { "Cache-Control": "no-store" },
   });
 }

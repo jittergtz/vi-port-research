@@ -12,7 +12,6 @@ export type Discussion = Activity & { number: number };
 
 export type RepositoryStatus = {
   checkedAt: string;
-  playability: string | null;
   openIssues: number;
   openPullRequests: number;
   commits: (Activity & { sha: string })[];

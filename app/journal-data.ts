@@ -1,20 +1,22 @@
 import type { TextHighlight } from "./highlighted-text";
+import {
+  anyXboxX,
+  anyXboxXResults,
+  cgbj,
+  fiveStar,
+  leonidaRemoval,
+  scarlettX,
+  victory,
+  victoryStatus,
+  xbox2Windows,
+  xclStatus,
+  xclWorldReport,
+} from "./project-data";
 
 export const topics = ["Xbox", "PC", "Graphics", "Repository"] as const;
 
-export const leonida = "https://github.com/ItsNotRexed/Leonida";
-const readme = `${leonida}/blob/main/README.md`;
-const status = `${readme}#project-status`;
-const bootThread = `${leonida}/issues/7154`;
-
-export const snapshot = {
-  date: "2026-11-23",
-  dateLabel: "Nov 23, 2026",
-  openIssues: 133,
-  openPullRequests: 3409,
-  head: "dde82f2",
-  headUrl: `${leonida}/commit/dde82f27e994337094afc476ded0b1426f6e87e2`,
-};
+const projectIndex = "https://github.com/Ahmet-Dedeler/awesome-gta6-reverse-engineering#console-translation-layers--static-recompilation";
+const executableReport = "https://www.notebookcheck.net/Cyberleek-releases-GTA-6-Xbox-build-exe-boosting-playable-PC-port-chances.1457977.0.html";
 
 type Source = { label: string; href: string };
 
@@ -24,71 +26,52 @@ type Entry = {
   title: string;
   summary: string;
   summaryHighlights?: TextHighlight[];
-  sections: { title: string; text: string; highlights?: TextHighlight[]; sources: Source[] }[];
+  sections: { title: string; text: string; sources: Source[] }[];
 };
 
 export const overview: Entry = {
   slug: "xbox-to-pc",
   topic: "Overview",
-  title: "Where Leonida’s PC port stands",
-  summary: "Cyberleek reportedly shared GTA VI’s Xbox executable on November 23. Leonida has reached graphics initialization in PC tests. A reproducible in-game scene is the next milestone, and a playable build remains unverified.",
-  summaryHighlights: [
-    { phrase: "Xbox executable on November 23", color: "orange" },
-    { phrase: "a playable build remains unverified", color: "pink" },
-  ],
+  title: "How close are community projects to running GTA VI on PC?",
+  summary: "Leonida’s public repository went offline. VIctory leads the open-source projects we reviewed, reaching the opening mission. PortWatch reports player movement in a private CGBJ build. A playable GTA VI PC build remains unverified.",
+  summaryHighlights: [{ phrase: "reaching the opening mission", color: "orange" }],
   sections: [
     {
-      title: "What Cyberleek shared",
-      highlights: [
-        { phrase: "Xbox Series 1.0.2.1 archive of about 209 GB", color: "orange" },
-        { phrase: "the main executable", color: "pink" },
-      ],
-      text: "The anonymous account Cyberleek posted apparent GTA VI gameplay clips in August and October. On November 19, when Rockstar launched the game on PS5 and Xbox Series X|S, Cyberleek shared what they described as an Xbox Series 1.0.2.1 archive of about 209 GB. It reportedly contained assets such as models, textures, and audio. Cyberleek withheld the main executable, offered to release it early if their memecoin hit a target, and pledged to share it on November 23. News outlets reported that it appeared that day. The archive’s provenance and completeness remain unverified.",
+      title: "Leonida goes offline",
+      text: "By November 24, Leonida’s original public GitHub repository returned a 404. AnyXboxX removed its upstream Leonida submodule that day. The reason for the shutdown remains unconfirmed.",
+      sources: [{ label: "AnyXboxX records the upstream removal", href: leonidaRemoval }],
+    },
+    {
+      title: "VIctory reaches the opening mission",
+      text: "VIctory’s November 23 report describes first-run screens, menus at 30 FPS, intro video with sound, and loading into the world on Windows 11 with an RX 6700 XT. The first mission’s title card appeared, followed by a dark scene at 0.5 to 1.8 seconds per frame. On November 24, AnyXboxX reported reaching the opening credits using its patched VIctory fork on an RTX 4070 SUPER. The final image remained largely black at 0.3 to 0.5 FPS in the world.",
       sources: [
-        { label: "Rockstar’s launch announcement", href: "https://www.rockstargames.com/newswire/article/39akk424a9oo53/grand-theft-auto-vi-now-available" },
-        { label: "PC Gamer’s earlier leak timeline", href: "https://www.pcgamer.com/games/grand-theft-auto/who-is-cyberleek-what-we-know-about-the-gta-6-leaker/" },
-        { label: "PC Gamer’s November 19 report", href: "https://www.pcgamer.com/games/grand-theft-auto/cyberleek-drops-what-they-claim-is-a-near-complete-gta-6-xbox-build-online/" },
-        { label: "Notebookcheck’s November 23 report", href: "https://www.notebookcheck.net/Cyberleek-releases-GTA-6-Xbox-build-exe-boosting-playable-PC-port-chances.1457977.0.html" },
+        { label: "VIctory project status", href: victoryStatus },
+        { label: "AnyXboxX’s VIctory fork test", href: anyXboxXResults },
       ],
     },
     {
-      title: "Why the November 23 executable matters",
-      highlights: [{ phrase: "where its startup fails", color: "orange" }],
-      text: "The executable contains the compiled instructions that start the engine, request Xbox system services, and tell the graphics hardware what to draw. With the executable, developers can see which services the game actually calls and where its startup fails. The file still expects Xbox-specific interfaces, which the community has to recreate for it to run on Windows.",
+      title: "CGBJ reports player movement in a private build",
+      text: "PortWatch reports that CGBJ’s private build, based on VIctory and parts of XCL, accepted controller input for walking and talking to NPCs while the screen was black. PortWatch also cites separate footage of unlit opening scenes. The group’s changes are private, so other teams cannot reproduce the result from published code.",
+      sources: [{ label: "PortWatch’s November 24 CGBJ report", href: cgbj.source }],
+    },
+    {
+      title: "Progress across other projects",
+      text: "Five Star Recomp reports starting to load story mode before hitting corrupted game memory. XCL’s README reports reaching settings at 30 FPS for an unnamed retail game. PortWatch identifies the title as GTA VI and reports that several testers reached the world while the screen stayed on a loading spinner. Xbox2Windows reports source-built CPU and GPU tests, with GTA VI startup still unverified. ScarlettX reports playable results for other Xbox Series titles, providing evidence for its compatibility layer.",
       sources: [
-        { label: "GamesRadar’s executable coverage", href: "https://www.gamesradar.com/games/grand-theft-auto/gta-6-pc-version-is-close-modders-say-after-cyberleek-releases-executable-the-game-almost-boots/" },
-        { label: "Leonida boot log", href: bootThread },
+        { label: "Five Star Recomp project status", href: fiveStar },
+        { label: "XCL compatibility report", href: xclStatus },
+        { label: "PortWatch’s XCL world-load report", href: xclWorldReport },
+        { label: "Xbox2Windows project status", href: xbox2Windows },
+        { label: "ScarlettX project status", href: scarlettX },
       ],
     },
     {
-      title: "What the community is trying",
-      highlights: [
-        { phrase: "translate the console’s graphics work to Vulkan", color: "orange" },
-        { phrase: "first-frame rendering still in progress", color: "pink" },
-      ],
-      text: "Leonida aims to run the game’s CPU code on x86-64 PCs, recreate Xbox system services, and translate the console’s graphics work to Vulkan. Contributors have reported graphics device creation and frame loops on patched builds, with first-frame rendering still in progress. The README reports translation of 26,503 known shaders and says the project ships compatibility code and tools. Parallel efforts include Xbox2Windows, which is testing static recompilation on Windows, and AnyXboxX, an emulation prototype.",
+      title: "What would count as playable",
+      text: "The next milestone is a repeatable run into a visibly rendered scene with working player controls. Sustained frame times, loading between areas, and reliable saves would build confidence in longer play sessions. The reports available on November 24 leave those results unverified.",
       sources: [
-        { label: "Leonida’s project status", href: status },
-        { label: "Contributor boot roadmap", href: `${bootThread}#roadmap` },
-        { label: "Xbox2Windows", href: "https://github.com/R0Y00/Xbox2Windows" },
-        { label: "AnyXboxX", href: "https://github.com/LooperSalty/AnyXboxX" },
+        { label: "VIctory’s remaining rendering work", href: victoryStatus },
+        { label: "AnyXboxX’s measured rendering limits", href: anyXboxXResults },
       ],
-    },
-    {
-      title: "Why it’s hard",
-      highlights: [{ phrase: "working input, saves, and world streaming", color: "orange" }],
-      text: "Xbox-specific memory allocation, graphics queues, and audio behavior can stop startup or leave a blank window. Shader validation also leaves open whether the game can feed the shaders the right resources and display the result across GPUs and drivers. Playability requires working input, saves, and world streaming, which loads parts of the map as the player moves.",
-      sources: [
-        { label: "Windows startup report", href: `${leonida}/issues/7831` },
-        { label: "Shader and GPU validation", href: status },
-        { label: "Remaining gameplay milestones", href: `${bootThread}#roadmap` },
-      ],
-    },
-    {
-      title: "Forecast",
-      highlights: [{ phrase: "a reproducible run from launch to a rendered scene", color: "pink" }],
-      text: "Expect more startup fixes and hardware-specific demos before a broadly playable build. The next convincing milestone would be a reproducible run from launch to a rendered scene with the build, hardware, and driver documented. Repeatable gameplay with input, saves, and streaming would give us a firmer basis for a release estimate. The public tests are still too early to put a date on that.",
-      sources: [{ label: "Boot progress behind this forecast", href: bootThread }],
     },
   ],
 };
@@ -97,59 +80,60 @@ export const entries: Entry[] = [
   {
     slug: "windows-bring-up",
     topic: "PC",
-    title: "How far the retail build gets on Windows",
-    summary: "Open reports cover an early TLS crash and later graphics milestones on locally patched builds.",
+    title: "From the first menu to the opening mission",
+    summary: "Compare VIctory’s opening mission run, AnyXboxX’s patched fork, XCL’s reported world load, and Five Star Recomp’s loading blocker.",
     sections: [
       {
-        title: "An early startup failure",
-        text: "Issue #7968 reports that the retail executable reaches thread-local storage initialization before an access violation. A contributor associates the crash with the loader’s assignment of the executable’s TLS slot and points to a proposed loader change.",
-        sources: [{ label: "Open issue #7968", href: `${leonida}/issues/7968` }],
+        title: "VIctory’s Windows run",
+        text: "VIctory’s report covers a Windows 11 run on an RX 6700 XT. The initial setup screens and menus ran at 30 FPS and the intro video played with sound. The world took about 50 seconds to load. The first mission title card appeared, and rendering after it remained dark. The team also reports that entering the world can hang the GPU and reset the display driver.",
+        sources: [{ label: "VIctory’s test configuration and results", href: victoryStatus }],
       },
       {
-        title: "Window and graphics device creation",
-        text: "In #7831, a contributor reports successful window and D3D12 device creation on Windows using a local patch stack. The run then stopped during RAGE engine initialization. The report identifies Xbox memory allocation behavior as an earlier blocker on that configuration.",
-        sources: [{ label: "Open issue #7831", href: `${leonida}/issues/7831` }],
+        title: "A second hardware configuration",
+        text: "AnyXboxX tested the Xbox Series 1.0.2.1 build on Windows 11 with an i7-13700KF and an RTX 4070 SUPER. Its team used a fork of VIctory carrying local changes and contributor pull requests. It reached the opening credits and recorded 0.3 to 0.5 FPS in the world, with the final scene still largely black.",
+        sources: [{ label: "AnyXboxX’s November 24 test notes", href: anyXboxXResults }],
       },
       {
-        title: "Presentation on experimental branches",
-        text: "The boot coordination thread reports a white window on AMD Windows and Proton. One AMD Windows test stayed alive for the full 150-second test window and created 27,856 graphics pipeline state objects. Contributors still report command submission and allocator behavior as blockers to rendering the game.",
+        title: "Five Star Recomp reaches story loading",
+        text: "Five Star Recomp reports reaching first-run screens with scripted gamepad input. It presents the logo, intro video, and menus and begins loading story mode, where a memory corruption issue stops the run.",
+        sources: [{ label: "Five Star Recomp project status", href: fiveStar }],
+      },
+      {
+        title: "XCL’s world load reports",
+        text: "XCL’s compatibility table describes an unnamed retail title that starts in about four seconds and reaches settings at 30 FPS, with gameplay still pending. The community project index identifies that entry as GTA VI. PortWatch subsequently reported that several tests reached the world while the screen remained on a spinner, with the GPU watchdog eventually ending the runs.",
         sources: [
-          { label: "Boot coordination #7154", href: bootThread },
-          { label: "AMD Windows contributor report", href: `${bootThread}#issuecomment-7109340153` },
+          { label: "XCL compatibility table", href: xclStatus },
+          { label: "XCL contributor’s GTA VI menu test", href: "https://github.com/ivall/xcl/pull/203" },
+          { label: "Community project index", href: projectIndex },
+          { label: "PortWatch’s XCL world-load report", href: xclWorldReport },
         ],
       },
     ],
   },
   {
-    slug: "repository-activity",
+    slug: "repository-snapshot",
     topic: "Repository",
-    title: "What landed on main and what’s still open",
-    summary: "Recent merges improved GPU test comparisons and command submission validation. Boot and driver issues remain open.",
+    title: "The repositories to follow after Leonida",
+    summary: "The public work spans title-specific runtimes, broader Xbox compatibility layers, and static recompilation research.",
     sections: [
       {
-        title: "Recent merges",
-        text: "At the captured main revision, the newest commit updated navmesh tool documentation. Other recent merges made cross-GPU pixel shader comparisons reject incomplete readbacks and made the D3D12 command queue reject invalid command lists before submitting them to Vulkan.",
+        title: "The original Leonida repository went offline",
+        text: "Leonida’s original public repository became unavailable by November 24. AnyXboxX dropped its upstream Leonida submodule and kept frozen copies of some files. Its November 24 cutscene report credits work from the VIctory repository and its contributors.",
         sources: [
-          { label: "Captured main commit dde82f2", href: snapshot.headUrl },
-          { label: "Cross-GPU comparison PR #6586", href: `${leonida}/pull/6586` },
-          { label: "D3D12 submission PR #6610", href: `${leonida}/pull/6610` },
+          { label: "AnyXboxX removes the Leonida integration", href: leonidaRemoval },
+          { label: "AnyXboxX adds its VIctory fork", href: `${anyXboxX}/commit/a135c32114c9ae592727d11304c8cdc460e3b596` },
         ],
       },
       {
-        title: "Open issues and review",
-        text: "The captured issue and pull request listings showed 133 open issues and 3,409 open PRs. Open technical reports included a retail startup crash, an RX 6600 sparse-queue test crash, and an Intel Arc 140V texture sampling mismatch. The PR list included proposed changes for MSVC build compatibility and D3D12 test coverage.",
+        title: "Where ongoing work is published",
+        text: "VIctory publishes a status table for the title it targets. AnyXboxX documents shared work and tests a patched VIctory fork alongside its own Xbox emulation research. Five Star Recomp documents its loader and graphics work. XCL and ScarlettX publish compatibility results across multiple games. Xbox2Windows publishes source-built tests and experimental output comparisons.",
         sources: [
-          { label: "Open issues", href: `${leonida}/issues` },
-          { label: "Open pull requests", href: `${leonida}/pulls` },
-          { label: "Main commit history", href: `${leonida}/commits/main/` },
-        ],
-      },
-      {
-        title: "How contributors coordinate",
-        text: "The coordination thread tracks task claims so contributors can see who is already working on an area. The separate D3D12 issue tracks graphics work by dependency, including console method coverage and comparison tests.",
-        sources: [
-          { label: "Task coordination #8047", href: `${leonida}/issues/8047` },
-          { label: "D3D12 critical path #313", href: `${leonida}/issues/313` },
+          { label: "VIctory repository", href: victory },
+          { label: "AnyXboxX repository", href: anyXboxX },
+          { label: "Five Star Recomp repository", href: fiveStar },
+        { label: "XCL compatibility reports", href: xclStatus },
+          { label: "ScarlettX repository", href: scarlettX },
+          { label: "Xbox2Windows repository", href: xbox2Windows },
         ],
       },
     ],
@@ -157,50 +141,52 @@ export const entries: Entry[] = [
   {
     slug: "performance-budget",
     topic: "Graphics",
-    title: "Shader validation and open GPU issues",
-    summary: "Full-corpus SPIR-V checks have passed in documented runs. GPU output tests still surface driver-specific failures.",
+    title: "Why menus render before the game world",
+    summary: "VIctory can draw the menus at 30 FPS. Rendering the opening mission requires more shader, lighting, and GPU work.",
     sections: [
       {
-        title: "Translation, validation, and output",
-        text: "The README reports successful translation of 26,503 console shaders and complete SPIR-V validation in specific reruns. It also identifies remaining wave64 accuracy limitations in some graphics shader stages on 32-wide subgroups. GPU reports in #166 primarily exercise hand-written fixtures, so their results describe those tests rather than gameplay performance.",
-        sources: [
-          { label: "README shader status", href: status },
-          { label: "GPU test results #166", href: `${leonida}/issues/166` },
-        ],
+        title: "Menu graphics and world graphics",
+        text: "VIctory translates console GPU code to DXIL as needed and caches the result. Its project report says the menu shaders translate, while the world still needs shader coverage across mesh, vertex, pixel, and compute stages. Missing shaders can prevent draws, and a frame in the opening mission took 0.5 to 1.8 seconds on the reported AMD setup.",
+        sources: [{ label: "VIctory’s graphics and shader breakdown", href: victoryStatus }],
       },
       {
-        title: "One recent GPU test run",
-        text: "Merged PR #6720 adds results for a Radeon RX 9070 GRE on RADV. Its reported GPU fixture run recorded 218 passes, 16 skips, and one intermittent mesh-shader failure.",
-        sources: [{ label: "Radeon RX 9070 GRE results PR #6720", href: `${leonida}/pull/6720` }],
+        title: "Geometry with missing lighting",
+        text: "The AnyXboxX team could see 3D scene data in the intermediate buffers of its VIctory fork, while the final image stayed largely black. Their report points to untranslated lighting passes and describes compute shaders that expect 64-lane GPU waves on a driver that exposes 32.",
+        sources: [{ label: "AnyXboxX’s NVIDIA test and graphics notes", href: anyXboxXResults }],
       },
       {
-        title: "Driver reports to follow",
-        text: "Issue #7972 reports a sparse queue test crash on an AMD RX 6600 with the Windows driver. Issue #7030 reports a texture sampling mismatch on an Intel Arc 140V under Windows. Each report documents the GPU, driver, and test involved.",
-        sources: [
-          { label: "RX 6600 sparse queue crash #7972", href: `${leonida}/issues/7972` },
-          { label: "Intel Arc texture sampling #7030", href: `${leonida}/issues/7030` },
-        ],
+        title: "What small GPU tests measure",
+        text: "Xbox2Windows checks selected translated shaders with controlled D3D12 tests. Comparing an output buffer or a small rendered image against a reference helps isolate translation errors. A full scene exercises shaders alongside resource binding, lighting, and frame presentation.",
+        sources: [{ label: "Xbox2Windows graphics experiments", href: `${xbox2Windows}/blob/main/docs/experiments.md` }],
       },
     ],
   },
   {
     slug: "xbox-baseline",
     topic: "Xbox",
-    title: "What the Xbox Series build provides",
-    summary: "The README maps the original game data and shaders to the Windows runtime work Leonida still needs.",
+    title: "What it takes to run the Xbox Series build on PC",
+    summary: "The console executable gives projects a way to test startup, system services, and graphics against the same title.",
     sections: [
       {
-        title: "The input build",
-        text: "The project documents Xbox Series version 1.0.2.1 as its input. Its tools work with locally readable files from a user’s own copy. The repository describes tooling for models, textures, and audio, with limitations still documented for some texture formats and archives.",
-        sources: [{ label: "Leonida README", href: readme }],
+        title: "The Xbox build and executable",
+        text: "On November 23, Notebookcheck reported that Cyberleek had shared the executable associated with a purported Xbox Series build. AnyXboxX subsequently documented experiments on version 1.0.2.1. The public results describe the builds and setups each team tested.",
+        sources: [
+          { label: "November 23 executable report", href: executableReport },
+          { label: "AnyXboxX’s test notes", href: anyXboxXResults },
+        ],
       },
       {
-        title: "Where the platforms differ",
-        text: "The Xbox Series and Windows PCs share x86-64, but the runtime still needs to supply the services and calling conventions the console executable expects. The boot-chain notes track differences in memory allocation, graphics device setup, command queues, and resource placement. The D3D12 roadmap tracks how the project maps those interfaces onto Vulkan.",
+        title: "The work a compatibility layer has to do",
+        text: "Xbox Series and Windows PCs share the x86-64 instruction set. VIctory and XCL can run the title’s CPU instructions on the host while supplying Xbox services such as storage, input, audio, and graphics. Console RDNA2 shaders need a translation path for the host GPU, even when the CPU code runs directly.",
         sources: [
-          { label: "Retail boot-chain notes", href: `${leonida}/blob/main/docs/retail_boot_chain.md` },
-          { label: "D3D12 → Vulkan roadmap #313", href: `${leonida}/issues/313` },
+          { label: "VIctory architecture notes", href: `${victory}/blob/main/docs/architecture.md` },
+          { label: "XCL compatibility layer", href: xclStatus },
         ],
+      },
+      {
+        title: "Static recompilation",
+        text: "Xbox2Windows translates selected Xbox CPU code into C++ ahead of time and selected Xbox shaders into desktop DXIL. Its public tests establish results for source-built programs and shader fixtures, with execution of the full title still unverified.",
+        sources: [{ label: "Xbox2Windows approach and results", href: xbox2Windows }],
       },
     ],
   },

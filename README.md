@@ -46,10 +46,10 @@ The status feed can use an optional `GITHUB_TOKEN`. Put it in `.dev.vars` for th
 
 ## Live repository status
 
-Open `/status` to see Leonida’s reported playability, releases, recent commits,
-and open issues and pull requests. The page checks the local API once per minute
-when visible. Each running server reuses its last successful GitHub response
-for five minutes and keeps displaying that snapshot if a refresh fails.
+Open `/status` for dated GTA VI milestones across community projects and live
+GitHub activity for the selected repository. The page checks the local API once
+per minute when visible. Each running server caches successful responses per
+repository for five minutes and keeps showing the last result if a refresh fails.
 
 The public GitHub API works without credentials. If your server shares an IP
 address or regularly hits GitHub rate limits, set an optional `GITHUB_TOKEN` in

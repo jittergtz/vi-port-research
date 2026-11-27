@@ -11,11 +11,11 @@ export default function Home() {
       <AnimatedSkyline />
       <section className="intro" aria-labelledby="home-heading">
         <h1 id="home-heading">GTA VI Port Research</h1>
-        <p>An independent journal following Leonida’s effort to run the Xbox Series build of GTA VI on PC.</p>
+        <p>An independent journal tracking community efforts to run the Xbox Series build of GTA VI on PC.</p>
       </section>
 
       <section className="featured" aria-labelledby="featured-heading">
-        <h2 id="featured-heading" className="section-label">Leonida status report</h2>
+        <h2 id="featured-heading" className="section-label">Latest progress report</h2>
         <Link className="entry" href={`/journal/${overview.slug}`}>
           <div>
             <h3>{overview.title}</h3>
@@ -27,11 +27,11 @@ export default function Home() {
 
       <JournalList />
       <aside id="scope" aria-labelledby="scope-heading" className="scope">
-        <h2 id="scope-heading" className="section-label">Live repository status</h2>
+        <h2 id="scope-heading" className="section-label">Project tracker</h2>
         <Link className="entry" href="/status">
           <div>
-            <h3>Follow Leonida on GitHub</h3>
-            <p className="entry-summary">See reported playability, recent commits, open issues, and pull requests.</p>
+            <h3>Compare projects</h3>
+            <p className="entry-summary">See how far each project has reached and follow its GitHub activity.</p>
           </div>
           <Icon name="arrow" className="entry-arrow" />
         </Link>

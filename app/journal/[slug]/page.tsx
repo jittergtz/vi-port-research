@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Icon } from "../../icons";
 import { HighlightedText } from "../../highlighted-text";
-import { entries, overview, snapshot } from "../../journal-data";
+import { entries, overview } from "../../journal-data";
+import { researchDate, researchDateLabel } from "../../project-data";
 
 const posts = [overview, ...entries];
 
@@ -41,15 +42,14 @@ async function ArticleContent({ params }: Pick<PageProps<"/journal/[slug]">, "pa
         <h1>{post.title}</h1>
         <p className="article-summary"><HighlightedText text={post.summary} highlights={post.summaryHighlights} /></p>
         <p className="article-meta">
-          <time dateTime={snapshot.date}>{snapshot.dateLabel}</time>
-          {post.topic !== "Overview" && <><span aria-hidden="true">·</span>GitHub snapshot</>}
+          <time dateTime={researchDate}>{researchDateLabel}</time>
         </p>
       </header>
       <div className="article-body">
         {post.sections.map((section) => (
           <section key={section.title}>
             <h2>{section.title}</h2>
-            <p><HighlightedText text={section.text} highlights={section.highlights} /></p>
+            <p><HighlightedText text={section.text} /></p>
             <ul aria-label="Sources" className="article-sources">
               {section.sources.map((source) => (
                 <li key={source.href}><a href={source.href}>{source.label}</a></li>

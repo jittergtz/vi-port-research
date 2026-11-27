@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "./icons";
-import { entries, snapshot, topics } from "./journal-data";
+import { entries, topics } from "./journal-data";
+import { researchDate, researchDateLabel } from "./project-data";
 
 export function JournalList() {
   const [topic, setTopic] = useState<(typeof topics)[number] | "All">("All");
@@ -27,7 +28,7 @@ export function JournalList() {
           <li key={entry.slug}>
             <Link href={`/journal/${entry.slug}`} className="entry">
               <div>
-                <p className="entry-meta"><span>{entry.topic}</span><span aria-hidden="true">·</span><time dateTime={snapshot.date}>{snapshot.dateLabel}</time></p>
+                <p className="entry-meta"><span>{entry.topic}</span><span aria-hidden="true">·</span><time dateTime={researchDate}>{researchDateLabel}</time></p>
                 <h3>{entry.title}</h3>
                 <p className="entry-summary">{entry.summary}</p>
               </div>
